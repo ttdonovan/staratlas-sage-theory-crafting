@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "sage-core",
+    "sage-yew",
+]
