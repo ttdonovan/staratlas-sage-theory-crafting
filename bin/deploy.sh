@@ -19,7 +19,7 @@ git commit -m "gh-pages"
 
 # force push to the "publishing source" of GitHub pages
 # in this case, the gh-pages branch
-git push -f git@github.com:ttdonovan/sage-theory-crafting.git main:gh-pages
+# git push -f git@github.com:ttdonovan/sage-theory-crafting.git main:gh-pages
 
 # back to previous directory
 popd

@@ -1,3 +1,5 @@
+use base64::{engine, Engine as _};
+
 use sage_core::{
     engine::CouncilRankEngine, PrivilegePoint, Privileges, MAX_CONCURRENT_FLEETS,
     MAX_EXPEDITED_RESCURE, MAX_FLEET_SIZE, MAX_PRIVILEGE_POINTS, MAX_STARPATH_PASS,
@@ -45,6 +47,17 @@ impl State {
 
     pub fn add_privilege_point(&mut self, point: PrivilegePoint) {
         self.engine.add_privilege_point(point);
+    }
+
+    pub fn council_rank_base64_url_safe(&self) -> String {
+        let crank = &self.engine.council_rank;
+        match serde_json::to_string(crank) {
+            Ok(json) => {
+                let hex_string = hex::encode(&json);
+                engine::URL_SAFE.encode(hex_string.as_bytes())
+            }
+            Err(_) => String::from(""),
+        }
     }
 
     pub fn council_rank_privileges(&self) -> &Privileges {
