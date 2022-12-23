@@ -1,6 +1,6 @@
 # Star Atlas: SAGE Theory Crafting
 
-http://ttdonovan.github.io/sage-theory-crafting
+https://ttdonovan.github.io/staratlas-sage-theory-crafting/
 
 ## About Star Atlas
 
