@@ -1,9 +1,10 @@
 use base64::{engine, Engine as _};
 
 use sage_core::{
-    engine::CouncilRankEngine, PrivilegePoint, Privileges, MAX_CONCURRENT_FLEETS,
+    engine::CouncilRankEngine, CouncilRank, PrivilegePoint, Privileges, MAX_CONCURRENT_FLEETS,
     MAX_EXPEDITED_RESCURE, MAX_FLEET_SIZE, MAX_PRIVILEGE_POINTS, MAX_STARPATH_PASS,
 };
+use web_sys::console;
 
 #[derive(Debug)]
 pub struct State {
@@ -58,6 +59,36 @@ impl State {
             }
             Err(_) => String::from(""),
         }
+    }
+
+    pub fn load_council_rank_from_base64_url_safe(&mut self, base64_url_safe: String) {
+        match engine::URL_SAFE.decode(&base64_url_safe) {
+            Ok(bytes) => match String::from_utf8(bytes) {
+                Ok(hex_string) => match hex::decode(&hex_string) {
+                    Ok(bytes) => match String::from_utf8(bytes) {
+                        Ok(json_string) => {
+                            match serde_json::from_str::<CouncilRank>(&json_string) {
+                                Ok(council_rank) => {
+                                    self.engine.council_rank = council_rank;
+                                }
+                                Err(_) => {
+                                    console::error_1(&"Unable to deserialize JSON value. Base64 URL Safe string might be outdated.".into());
+                                    console::log_1(&json_string.into());
+                                }
+                            }
+                        }
+                        Err(_) => {
+                            console::error_1(&"Unexpected error (hex 2). Please try agian.".into())
+                        }
+                    },
+                    Err(_) => {
+                        console::error_1(&"Unexpected error (hex 1). Please try agian.".into())
+                    }
+                },
+                Err(_) => console::error_1(&"Unexpected error (base64). Please try agian.".into()),
+            },
+            Err(_) => console::error_1(&"Invalid Base64 URL Safe input (be sure to remove whitespace). Please try agian.".into()),
+        };
     }
 
     pub fn council_rank_privileges(&self) -> &Privileges {

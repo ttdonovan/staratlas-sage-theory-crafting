@@ -8,7 +8,7 @@ rm -fr target/dist
 
 # build static files
 pushd sage-yew
-trunk build --dist ../target/dist --release
+trunk build --dist ../target/dist --public-url= "/staratlas-sage-theory-crafting/" --release
 popd
 
 # # navigate into the build ouptput dir
@@ -18,7 +18,6 @@ popd
 
 # # edit index.html (cat index.html)
 # # type="text/javascript"
-# # change link href to be relative "./" to index.html
 
 # git add -A
 # git commit -m "gh-pages"

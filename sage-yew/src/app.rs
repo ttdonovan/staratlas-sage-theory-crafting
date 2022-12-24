@@ -1,3 +1,4 @@
+use web_sys::HtmlInputElement as InputElement;
 use yew::html::Scope;
 use yew::prelude::*;
 
@@ -5,8 +6,10 @@ use sage_core::PrivilegePoint;
 
 use crate::state::State;
 
+#[derive(Debug)]
 pub enum Msg {
     AddPoint(PrivilegePoint),
+    LoadBase64UrlSafeBuild(String),
     ResetAll,
 }
 
@@ -25,11 +28,17 @@ impl Component for App {
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+        // console::log_1(&format!("{:?}", msg).into());
+
         match msg {
             Msg::AddPoint(point) => {
                 self.state.counter += 1;
 
                 self.state.add_privilege_point(point);
+            }
+            Msg::LoadBase64UrlSafeBuild(base64_url_safe) => {
+                self.state
+                    .load_council_rank_from_base64_url_safe(base64_url_safe);
             }
             Msg::ResetAll => {
                 self.state = State::default();
@@ -145,13 +154,27 @@ impl Component for App {
 }
 
 impl App {
-    fn view_base64_url_safe_input(&self, _link: &Scope<Self>) -> Html {
+    fn view_base64_url_safe_input(&self, link: &Scope<Self>) -> Html {
+        let onkeypress = link.batch_callback(|e: KeyboardEvent| {
+            if e.key() == "Enter" {
+                let input: InputElement = e.target_unchecked_into();
+                let value = input.value();
+                // FIXME: need a better way to "clear/reset" the textarea
+                input.set_value("");
+
+                Some(Msg::LoadBase64UrlSafeBuild(value))
+            } else {
+                None
+            }
+        });
+
         html! {
             <div class="mb-4">
                 <textarea
                     class="form-control"
-                    placeholder="(WIP) Paste a Base64 URL Safe string to load a Council Rank build."
+                    placeholder="Paste a Base64 URL Safe string to load a Council Rank build."
                     rows="8"
+                    {onkeypress}
                 >
                 </textarea>
             </div>
